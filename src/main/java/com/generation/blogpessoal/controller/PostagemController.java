@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +30,9 @@ public class PostagemController {
 
 	@Autowired //injeção de dependencias - instanciar a classe PostagemRepository
 	private PostagemRepository postagemRepository;
+	
+	@Autowired
+	private TemaRepository temaRepository;
 	
 	@GetMapping //defini e verbo http que atende esse metodo
 	public ResponseEntity<List<Postagem>> getAll(){
@@ -41,7 +45,6 @@ public class PostagemController {
 		//return esta trazendo o status de ok- 200 caso ele consiga fazer o método findAll da JpaRepository
 		return ResponseEntity.ok(postagemRepository.findAll());
 		//SELECT * FROM tb_postagens
-		
 		
 		/*
 		 * Processo até aqui
@@ -79,8 +82,11 @@ public class PostagemController {
 		 * 
 		 */
 		//retorno em formato ResponseEntity
-		return ResponseEntity.status(HttpStatus.CREATED)
+		if (temaRepository.existsById(postagem.getTema().getId()))
+			return ResponseEntity.status(HttpStatus.CREATED)
 				.body(postagemRepository.save(postagem));
+		
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
 		
 		/*
 		 * o return esta colocando o status 201- created e esta executando o save da postagem que vem do 
@@ -92,16 +98,22 @@ public class PostagemController {
 	@PutMapping //verbo http Put para o consumo no insomnia
 	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem){
 		/*
-		 * Retorno do Metodo deve ser no formato ResponseEntity com objeto Postagem, nome do método é post
+		 * Retorno do Metodo deve ser no formato ResponseEntity com objetgit add .
+		 * o Postagem, nome do método é post
 		 * @valid é a anotação que garante que vamos aplicar nessa ação as validação para registro dessa nova postagem
 		 * @RequestBody é anotação que permite receber dados no body(corpo) da requisição essa informação que vem do insominia sera no formato Postagem 
 		 * 
 		 */
+		if (postagemRepository.existsById(postagem.getId())) {
+			if (temaRepository.existsById(postagem.getTema().getId()))
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(postagemRepository.save(postagem));
+						
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
+		}
 		
-		return postagemRepository.findById(postagem.getId())
-				.map(resposta-> ResponseEntity.status(HttpStatus.OK)
-				.body(postagemRepository.save(postagem)))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
 		/*
 		 * aqui primeiro a gente forma o objeto com o getId da postagem enviada pelo corpo da requisição
 		 * depois criamos um map e passamos um status ok
