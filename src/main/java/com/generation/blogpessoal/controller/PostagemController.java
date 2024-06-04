@@ -102,7 +102,6 @@ public class PostagemController {
 		 * o Postagem, nome do método é post
 		 * @valid é a anotação que garante que vamos aplicar nessa ação as validação para registro dessa nova postagem
 		 * @RequestBody é anotação que permite receber dados no body(corpo) da requisição essa informação que vem do insominia sera no formato Postagem 
-		 * 
 		 */
 		if (postagemRepository.existsById(postagem.getId())) {
 			if (temaRepository.existsById(postagem.getTema().getId()))
