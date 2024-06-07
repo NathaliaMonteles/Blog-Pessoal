@@ -24,7 +24,7 @@ public class SwaggerConfig {
 						.version("v0.0.1")
 						.license(new License()
 								.name("Nathalia Monteles")
-								.url("meu site - https://www.linkedin.com/in/nathalia-martins-monteles-a42117164/"))
+								.url("https://www.linkedin.com/in/nathalia-martins-monteles-a42117164/"))
 							.contact(new Contact()
 								.name("Nathalia Monteles")
 								.url("")
